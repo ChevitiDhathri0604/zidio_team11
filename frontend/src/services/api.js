@@ -21,6 +21,18 @@ api.interceptors.request.use(
 );
 
 export const authService = {
+  requestOTP: async (email) => {
+    const response = await api.post('/auth/request-otp', { email });
+    return response.data;
+  },
+  verifyOTP: async (email, otp, name) => {
+    const response = await api.post('/auth/verify-otp', { email, otp, name });
+    if (response.data.token) {
+      localStorage.setItem('intellmeet_token', response.data.token);
+      localStorage.setItem('intellmeet_user', JSON.stringify(response.data));
+    }
+    return response.data;
+  },
   login: async (credentials) => {
     const response = await api.post('/auth/login', credentials);
     if (response.data.token) {
