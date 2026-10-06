@@ -1,14 +1,19 @@
 {
-  "name": "backend",
+  "name": "intellmeet-backend",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/server.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
+  "author": "Team 11",
   "license": "ISC",
-  "description": "",
+  "description": "IntellMeet AI-Powered Meeting Platform Backend",
   "dependencies": {
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -16,6 +21,7 @@
     "express": "^5.2.1",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.10.2",
+    "nodemailer": "^10.0.15",
     "openai": "^7.23.0",
     "socket.io": "^4.8.4"
   },

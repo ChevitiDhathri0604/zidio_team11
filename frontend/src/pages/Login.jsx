@@ -8,8 +8,8 @@ export function Login({ setUser }) {
   const [password, setPassword] = useState('');
   const [otpCode, setOtpCode] = useState('');
   const [otpSent, setOtpSent] = useState(false);
-  const [otpHint, setOtpHint] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -18,16 +18,18 @@ export function Login({ setUser }) {
     if (!email) return;
     setLoading(true);
     setError('');
+    setSuccess('');
     try {
       const res = await authService.requestOTP(email);
       setOtpSent(true);
-      setOtpHint(res.otpCode || '');
+      setSuccess(res.message || `OTP sent to ${email}. Check your inbox.`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to send OTP.');
     } finally {
       setLoading(false);
     }
   };
+
 
   const handleVerifyOTP = async (e) => {
     e.preventDefault();
@@ -92,6 +94,12 @@ export function Login({ setUser }) {
           </div>
         )}
 
+        {success && !error && (
+          <div className="p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs text-center">
+            ✅ {success}
+          </div>
+        )}
+
         {authMode === 'otp' ? (
           !otpSent ? (
             /* Step 1: Request OTP for Any Mail */
@@ -121,11 +129,7 @@ export function Login({ setUser }) {
             <form onSubmit={handleVerifyOTP} className="space-y-4">
               <div className="p-4 bg-indigo-500/10 border border-indigo-500/30 rounded-2xl text-center space-y-1">
                 <span className="text-xs text-indigo-300">OTP Sent to: <strong className="text-white">{email}</strong></span>
-                {otpHint && (
-                  <div className="text-xs font-bold text-emerald-400 pt-1">
-                    Your One-Time Password Code: <span className="bg-slate-950 px-2 py-0.5 rounded border border-emerald-500/40 tracking-widest font-mono text-sm text-white">{otpHint}</span>
-                  </div>
-                )}
+                <p className="text-xs text-slate-400 mt-1">📬 Check your inbox (and spam folder)</p>
               </div>
 
               <div>

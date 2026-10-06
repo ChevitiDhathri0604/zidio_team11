@@ -1,6 +1,5 @@
 const express = require('express');
 const http = require('http');
-const path = require('path');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
@@ -17,8 +16,23 @@ const setupSocketIO = require('./realtime/socketHandler');
 const app = express();
 const server = http.createServer(app);
 
-// Enable CORS
-app.use(cors({ origin: '*', credentials: true }));
+// Enable CORS for local dev + Vercel production
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:3000',
+  process.env.FRONTEND_URL
+].filter(Boolean);
+
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.some(o => o && origin.endsWith('.vercel.app'))) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true
+}));
 app.use(express.json());
 
 // API Routes
@@ -30,16 +44,6 @@ app.use('/api/tasks', taskRoutes);
 // Health Check
 app.get('/api/health', (req, res) => {
   res.json({ status: 'active', platform: 'IntellMeet AI Backend', time: new Date() });
-});
-
-// Serve static frontend in unified deployment
-const frontendPath = path.join(__dirname, '../../frontend/dist');
-app.use(express.static(frontendPath));
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(frontendPath, 'index.html'), (err) => {
-    if (err) next();
-  });
 });
 
 // Socket.io Setup

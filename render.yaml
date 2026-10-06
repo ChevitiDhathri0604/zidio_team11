@@ -1,0 +1,21 @@
+services:
+  - type: web
+    name: intellmeet-backend
+    env: node
+    plan: free
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node src/server.js
+    envVars:
+      - key: PORT
+        value: 10000
+      - key: JWT_SECRET
+        generateValue: true
+      - key: EMAIL_USER
+        value: dhathricheviti495@gmail.com
+      - key: EMAIL_PASS
+        sync: false
+      - key: EMAIL_FROM
+        value: IntellMeet <dhathricheviti495@gmail.com>
+      - key: FRONTEND_URL
+        sync: false
