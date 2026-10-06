@@ -16,13 +16,24 @@ const app = express();
 app.use(cors({ origin: '*', credentials: true }));
 app.use(express.json());
 
-// Routes attached to both standard /api and Netlify function paths
-app.use(['/api/auth', '/.netlify/functions/netlify-api/api/auth'], authRoutes);
-app.use(['/api/meetings', '/.netlify/functions/netlify-api/api/meetings'], meetingRoutes);
-app.use(['/api/ai', '/.netlify/functions/netlify-api/api/ai'], aiRoutes);
-app.use(['/api/tasks', '/.netlify/functions/netlify-api/api/tasks'], taskRoutes);
+// Normalize base path for serverless handler
+app.use((req, res, next) => {
+  if (req.url.startsWith('/.netlify/functions/netlify-api')) {
+    req.url = req.url.replace('/.netlify/functions/netlify-api', '');
+  }
+  if (!req.url.startsWith('/api')) {
+    req.url = '/api' + req.url;
+  }
+  next();
+});
 
-app.get(['/api/health', '/.netlify/functions/netlify-api/api/health'], (req, res) => {
+// API Endpoints
+app.use('/api/auth', authRoutes);
+app.use('/api/meetings', meetingRoutes);
+app.use('/api/ai', aiRoutes);
+app.use('/api/tasks', taskRoutes);
+
+app.get('/api/health', (req, res) => {
   res.json({ status: 'active', platform: 'IntellMeet Netlify Serverless API', time: new Date() });
 });
 
