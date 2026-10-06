@@ -1,9 +1,9 @@
 const express = require('express');
 const http = require('http');
+const path = require('path');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const path = require('path');
 const { Server } = require('socket.io');
 
 dotenv.config();
@@ -32,13 +32,12 @@ app.get('/api/health', (req, res) => {
   res.json({ status: 'active', platform: 'IntellMeet AI Backend', time: new Date() });
 });
 
-// Serve Frontend Static Assets when deployed together
-const frontendBuildPath = path.join(__dirname, '../../frontend/dist');
-app.use(express.static(frontendBuildPath));
-
+// Serve static frontend in unified deployment
+const frontendPath = path.join(__dirname, '../../frontend/dist');
+app.use(express.static(frontendPath));
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api')) return next();
-  res.sendFile(path.join(frontendBuildPath, 'index.html'), (err) => {
+  res.sendFile(path.join(frontendPath, 'index.html'), (err) => {
     if (err) next();
   });
 });

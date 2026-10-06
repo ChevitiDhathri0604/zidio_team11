@@ -4,6 +4,6 @@
   "private": true,
   "scripts": {
     "build": "cd frontend && npm install && npm run build",
-    "start": "node backend/src/server.js"
+    "start": "cd backend && npm install && node src/server.js"
   }
 }
